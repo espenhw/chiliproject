@@ -133,12 +133,15 @@ class User < Principal
       # user is not yet registered, try to authenticate with available sources
       attrs = AuthSource.authenticate(login, password)
       if attrs
-        user = new(attrs)
+        user = new(attrs.except(:groups))
         user.login = login
         user.language = Setting.default_language
         if user.save
           user.reload
           logger.info("User '#{user.login}' created from external auth source: #{user.auth_source.type} - #{user.auth_source.name}") if logger && user.auth_source
+          if attrs[:groups]
+            add_to_existing_groups(user, attrs[:groups])
+          end
         end
       end
     end
@@ -146,6 +149,17 @@ class User < Principal
     user
   rescue => text
     raise text
+  end
+
+  def self.add_to_existing_groups(user, groups)
+    groups.each do |group|
+      logger.debug("Looking for #{group}") if logger
+      g = Group.find(:first, :conditions => [ "lastname = ?", group ])
+      if g
+        logger.debug("Adding #{user.login} to #{group}") if logger
+        g.users << user
+      end
+    end
   end
 
   # Returns the user who matches the given autologin +key+ or nil

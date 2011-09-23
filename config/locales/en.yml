@@ -306,6 +306,7 @@ en:
   field_assigned_to_role: "Assignee's role"
   field_text: Text field
   field_visible: Visible
+  field_groups: Groups
   field_warn_on_leaving_unsaved: "Warn me when leaving a page with unsaved text"
 
   setting_app_title: Application title

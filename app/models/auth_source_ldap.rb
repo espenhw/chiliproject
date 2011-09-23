@@ -18,7 +18,7 @@ class AuthSourceLdap < AuthSource
   validates_presence_of :host, :port, :attr_login
   validates_length_of :name, :host, :maximum => 60, :allow_nil => true
   validates_length_of :account, :account_password, :base_dn, :maximum => 255, :allow_nil => true
-  validates_length_of :attr_login, :attr_firstname, :attr_lastname, :attr_mail, :maximum => 30, :allow_nil => true
+  validates_length_of :attr_login, :attr_firstname, :attr_lastname, :attr_mail, :attr_groups, :maximum => 30, :allow_nil => true
   validates_numericality_of :port, :only_integer => true
 
   before_validation :strip_ldap_attributes
@@ -54,7 +54,7 @@ class AuthSourceLdap < AuthSource
   private
 
   def strip_ldap_attributes
-    [:attr_login, :attr_firstname, :attr_lastname, :attr_mail].each do |attr|
+    [:attr_login, :attr_firstname, :attr_lastname, :attr_mail, :attr_groups].each do |attr|
       write_attribute(attr, read_attribute(attr).strip) unless read_attribute(attr).nil?
     end
   end
@@ -74,6 +74,7 @@ class AuthSourceLdap < AuthSource
      :firstname => AuthSourceLdap.get_attr(entry, self.attr_firstname),
      :lastname => AuthSourceLdap.get_attr(entry, self.attr_lastname),
      :mail => AuthSourceLdap.get_attr(entry, self.attr_mail),
+     :groups => AuthSourceLdap.get_attr(entry, self.attr_groups, true).map { |v| v.scan(/CN=([^,]*)/)[0] },
      :auth_source_id => self.id
     }
   end
@@ -82,7 +83,7 @@ class AuthSourceLdap < AuthSource
   # include the user attributes if on-the-fly registration is enabled
   def search_attributes
     if onthefly_register?
-      ['dn', self.attr_firstname, self.attr_lastname, self.attr_mail]
+      ['dn', self.attr_firstname, self.attr_lastname, self.attr_mail, self.attr_groups]
     else
       ['dn']
     end
@@ -118,9 +119,9 @@ class AuthSourceLdap < AuthSource
     attrs
   end
 
-  def self.get_attr(entry, attr_name)
+  def self.get_attr(entry, attr_name, wantarray=false)
     if !attr_name.blank?
-      entry[attr_name].is_a?(Array) ? entry[attr_name].first : entry[attr_name]
+      entry[attr_name].is_a?(Array) && !wantarray ? entry[attr_name].first : entry[attr_name]
     end
   end
 end
