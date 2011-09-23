@@ -93,6 +93,9 @@ class GroupsController < ApplicationController
   # DELETE /groups/1.xml
   def destroy
     @group = Group.find(params[:id])
+    if @group.id == Group.ALL_USERS
+      return head(:forbidden)
+    end
     @group.destroy
 
     respond_to do |format|
