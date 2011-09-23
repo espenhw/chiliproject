@@ -118,6 +118,9 @@ class GroupsController < ApplicationController
 
   def remove_user
     @group = Group.find(params[:id])
+    if @group.id == Group::ALL_USERS
+      return head(:forbidden)
+    end
     @group.users.delete(User.find(params[:user_id])) if request.post?
     respond_to do |format|
       format.html { redirect_to :controller => 'groups', :action => 'edit', :id => @group, :tab => 'users' }

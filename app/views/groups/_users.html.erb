@@ -10,9 +10,10 @@
 			<tr id="user-<%= user.id %>" class="<%= cycle 'odd', 'even' %>">
 				<td class="user"><%= link_to_user user %></td>
 			  <td class="buttons">
-			      <%= link_to_remote l(:button_delete), { :url => { :controller => 'groups', :action => 'remove_user', :id => @group, :user_id => user },
-			      																				:method => :post },
-			      																		  :class => 'icon icon-del' %>
+			    <%= link_to_remote l(:button_delete), { :url => { :controller => 'groups', :action => 'remove_user', :id => @group, :user_id => user },
+			                                            :method => :post },
+                                                                  :class => 'icon icon-del'
+                                unless @group.id == Group::ALL_USERS %>
 			  </td>
 			</tr>
 		<% end %>
