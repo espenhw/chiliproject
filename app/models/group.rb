@@ -12,6 +12,8 @@
 #++
 
 class Group < Principal
+  ALL_USERS = -1
+
   has_and_belongs_to_many :users, :after_add => :user_added,
                                   :after_remove => :user_removed
 

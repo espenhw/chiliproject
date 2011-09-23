@@ -91,6 +91,10 @@ class User < Principal
     end
   end
 
+  def after_create
+    Group.find(Group::ALL_USERS).users << self
+  end
+
   def reload(*args)
     @name = nil
     @projects_by_role = nil
