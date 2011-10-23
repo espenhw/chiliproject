@@ -19,7 +19,7 @@ class Principal < ActiveRecord::Base
   has_many :projects, :through => :memberships
 
   # Groups and active users
-  named_scope :active, :conditions => "#{Principal.table_name}.type='Group' OR (#{Principal.table_name}.type='User' AND #{Principal.table_name}.status = 1)"
+  named_scope :active, :conditions => "#{Principal.table_name}.type in ('Group', 'AllUsers') OR (#{Principal.table_name}.type='User' AND #{Principal.table_name}.status = 1)"
 
   named_scope :like, lambda {|q|
     s = "%#{q.to_s.strip.downcase}%"
