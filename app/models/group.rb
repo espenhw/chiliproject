@@ -52,20 +52,3 @@ class Group < Principal
     all_users
   end
 end
-
-class AllUsers < Group
-  def validate_on_create
-    # There should be only one AllUsers in the database
-    errors.add_to_base 'An all users group already exists.' if AllUsers.find(:first)
-  end
-
-  def available_custom_fields
-    []
-  end
-
-  def name(*args); I18n.t(:label_group_all_users) end
-
-  def to_s
-    name
-  end
-end
