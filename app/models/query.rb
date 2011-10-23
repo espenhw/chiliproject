@@ -471,6 +471,7 @@ class Query < ActiveRecord::Base
           groups = Group.find_all_by_id(v)
         end
         groups ||= []
+        groups.delete(Group.all_users)
 
         members_of_groups = groups.inject([]) {|user_ids, group|
           if group && group.user_ids.present?
