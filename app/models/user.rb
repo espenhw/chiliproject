@@ -92,7 +92,7 @@ class User < Principal
   end
 
   def after_create
-    Group.find(Group::ALL_USERS).users << self
+    Group.all_users.users << self
   end
 
   def reload(*args)

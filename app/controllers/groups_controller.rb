@@ -20,7 +20,8 @@ class GroupsController < ApplicationController
   # GET /groups
   # GET /groups.xml
   def index
-    @groups = Group.find(:all, :order => 'lastname')
+    c = ARCondition.new("status <> 0")
+    @groups = Group.find(:all, :conditions => c.conditions, :order => 'lastname')
 
     respond_to do |format|
       format.html # index.html.erb
@@ -93,9 +94,6 @@ class GroupsController < ApplicationController
   # DELETE /groups/1.xml
   def destroy
     @group = Group.find(params[:id])
-    if @group.id == Group.ALL_USERS
-      return head(:forbidden)
-    end
     @group.destroy
 
     respond_to do |format|
@@ -121,9 +119,6 @@ class GroupsController < ApplicationController
 
   def remove_user
     @group = Group.find(params[:id])
-    if @group.id == Group::ALL_USERS
-      return head(:forbidden)
-    end
     @group.users.delete(User.find(params[:user_id])) if request.post?
     respond_to do |format|
       format.html { redirect_to :controller => 'groups', :action => 'edit', :id => @group, :tab => 'users' }

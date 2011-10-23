@@ -12,8 +12,6 @@
 #++
 
 class Group < Principal
-  ALL_USERS = -1
-
   has_and_belongs_to_many :users, :after_add => :user_added,
                                   :after_remove => :user_removed
 
@@ -43,5 +41,31 @@ class Group < Principal
       MemberRole.find(:all, :include => :member,
                             :conditions => ["#{Member.table_name}.user_id = ? AND #{MemberRole.table_name}.inherited_from IN (?)", user.id, member.member_role_ids]).each(&:destroy)
     end
+  end
+
+  def self.all_users
+    all_users = AllUsers.find(:first)
+    if all_users.nil?
+      all_users = AllUsers.create(:lastname => 'All Users', :status => 0)
+      raise 'Unable to create the all users group.' if all_users.new_record?
+    end
+    all_users
+  end
+end
+
+class AllUsers < Group
+  def validate_on_create
+    # There should be only one AllUsers in the database
+    errors.add_to_base 'An all users group already exists.' if AllUsers.find(:first)
+  end
+
+  def available_custom_fields
+    []
+  end
+
+  def name(*args); I18n.t(:label_group_all_users) end
+
+  def to_s
+    name
   end
 end

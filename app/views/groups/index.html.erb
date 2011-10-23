@@ -14,15 +14,9 @@
   <tbody>
 <% @groups.each do |group| %>
   <tr class="<%= cycle 'odd', 'even' %>">
-    <% if group.id != Group::ALL_USERS %>
     <td><%= link_to h(group), :action => 'edit', :id => group %></td>
     <td align="center"><%= group.users.size %></td>
     <td class="buttons"><%= link_to l(:button_delete), group, :confirm => l(:text_are_you_sure), :method => :delete, :class => 'icon icon-del' %></td>
-    <% else %>
-    <td><%= h(group) %></td>
-    <td align="center"><em>All</em></td>
-    <td class="buttons"></td>
-    <% end %>
   </tr>
 <% end %>
 </table>
